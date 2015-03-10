@@ -54,8 +54,10 @@ def run():
         input_state['key'] = pygame.key.get_pressed()
         input_state['mouse'] = pygame.mouse.get_pos()
         game.update()
-        if(counter%50000 == 0):
-            #print float(game.score_left.score)/(game.score_right.score+1)
+        if(counter%10000 == 0):
+            print float(game.score_left.score)/(game.score_right.score+1), game.player_left.countNonZero/game.player_left.updateCount
+            game.player_left.countNonZero = 0.0
+            game.player_left.updateCount = 0.0
             game.draw(output_surface)
             #~ pygame.surfarray.pixels_alpha(output_surface)[:,::2] = 12
             display_surface.blit(output_surface, (0,0))

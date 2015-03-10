@@ -9,7 +9,7 @@ class QLearningPlayer(object):
         self.discount = 0.9
         self.actions = [-1, 0, 1]
         self.reward = 0
-        self.countZero=0.0
+        self.updateCount=0.0
         self.countNonZero=0.0
         
     def update(self, paddle, game):
@@ -19,11 +19,11 @@ class QLearningPlayer(object):
         if max(actionQValues)>0 :
             self.countNonZero += 1
             if self.countNonZero%100==0:
-                print self.countNonZero/self.countZero
-        else:
-            self.countZero += 1
-        #paddle.direction = action
-        paddle.direction = random.choice([-1, 0, 1])
+                print self.countNonZero/self.updateCount
+        
+        self.updateCount += 1
+        paddle.direction = action
+        #paddle.direction = random.choice([-1, 0, 1])
         lastQValue = self.getQValue(self.lastState, self.lastAction)
         self.qValues[(self.lastState, self.lastAction)] = float(lastQValue + self.alpha*(self.reward + self.discount*max(actionQValues) - lastQValue))
         self.lastState = state
@@ -31,7 +31,7 @@ class QLearningPlayer(object):
         self.reward = 0
 
     def hit(self):
-        self.reward = 200
+        self.reward = 5
             
     def lost(self):
         # If we lose, randomise the bias again

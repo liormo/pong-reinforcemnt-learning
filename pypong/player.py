@@ -5,34 +5,42 @@ class QLearningPlayer(object):
         self.qValues = {}
         self.lastState = None
         self.lastAction = None
-        self.alpha = 0.8
-        self.discount = 0.9
+        self.alpha = 0.2
+        self.discount = 0.96
         self.actions = [-1, 0, 1]
         self.reward = 0
         self.updateCount=0.0
         self.countNonZero=0.0
+        self.lastActionQValues=[]
         
     def update(self, paddle, game):
-        state = (math.floor(game.ball.rect.x/5), math.floor(game.ball.rect.y/5), math.floor(2*paddle.rect.y/paddle.rect.height))
+        if(game.ball.rect.x<game.paddle_left.rect.right):
+            state="lost"
+        else:
+            resolution = math.floor((max(1,game.ball.rect.x-game.paddle_left.rect.right+1)*100)**(1.0/3))-3
+            state = (resolution, math.floor(game.ball.rect.y/resolution), math.floor(paddle.rect.y/resolution))
         actionQValues = [self.getQValue(state, a) for a in self.actions]
+        
         action = random.choice([a for a in self.actions if self.getQValue(state, a) == max(actionQValues)])
-        if max(actionQValues)>0 :
+        if(random.randrange(10)==1):
+            action = random.choice(self.actions)
+        if max(actionQValues)>0 or min(actionQValues)<0:
             self.countNonZero += 1
-            if self.countNonZero%100==0:
-                print self.countNonZero/self.countZero
+            #if self.countNonZero%100==0:
+            #    print self.countNonZero/self.updateCount
         
         self.updateCount += 1
-        if(
-        #paddle.direction = action
-        paddle.direction = random.choice([-1, 0, 1])
+        paddle.direction = action
+        #paddle.direction = random.choice([-1, 0, 1])
         lastQValue = self.getQValue(self.lastState, self.lastAction)
         self.qValues[(self.lastState, self.lastAction)] = float(lastQValue + self.alpha*(self.reward + self.discount*max(actionQValues) - lastQValue))
         self.lastState = state
         self.lastAction = action
+        self.lastActionQValues = actionQValues
         self.reward = 0
 
     def hit(self):
-        self.reward = 200
+        self.reward = 5
             
     def lost(self):
         # If we lose, randomise the bias again

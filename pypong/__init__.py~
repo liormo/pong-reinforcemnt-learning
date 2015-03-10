@@ -102,7 +102,7 @@ class Game(object):
                     self.ball.velocity_vec[0] = velocity[0] * self.ball.velocity
                     self.ball.velocity_vec[1] = velocity[1] * self.ball.velocity
                     self.player_left.hit()
-                    #self.play_sound(self.sound_paddle)
+                    self.play_sound(self.sound_paddle)
         else:
             # Right side bullet-through-paper check on ball and paddle.
             if self.ball.velocity_vec[0] > 0:

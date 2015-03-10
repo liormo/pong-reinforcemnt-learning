@@ -20,7 +20,7 @@ def run():
         'sound_missed': 'assets/missed-ball.wav',
         'sound_paddle': 'assets/bounce-paddle.wav',
         'sound_wall': 'assets/bounce-wall.wav',
-        'sound': True,
+        'sound': False,
     }
     pygame.mixer.pre_init(22050, -16, 2, 1024)
     pygame.init()
@@ -54,8 +54,12 @@ def run():
         input_state['key'] = pygame.key.get_pressed()
         input_state['mouse'] = pygame.mouse.get_pos()
         game.update()
-        if(counter%500000 == 0):
-            #print float(game.score_left.score)/(game.score_right.score+1)
+        if(counter%100000 == 0 or counter%5000000 < 1000):
+            print float(game.score_left.score)/(game.score_right.score+1), game.player_left.countNonZero/game.player_left.updateCount
+            print game.player_left.lastAction, game.player_left.lastActionQValues
+            print game.player_left.lastState
+            game.player_left.countNonZero = 0.0
+            game.player_left.updateCount = 0.0
             game.draw(output_surface)
             #~ pygame.surfarray.pixels_alpha(output_surface)[:,::2] = 12
             display_surface.blit(output_surface, (0,0))
