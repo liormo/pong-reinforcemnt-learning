@@ -1,4 +1,4 @@
-import pygame, pypong
+import pygame, pypong, sys
 from pypong.player import QLearningPlayer, BasicAIPlayer, KeyboardPlayer, MousePlayer
     
 def run():
@@ -20,7 +20,7 @@ def run():
         'sound_missed': 'assets/missed-ball.wav',
         'sound_paddle': 'assets/bounce-paddle.wav',
         'sound_wall': 'assets/bounce-wall.wav',
-        'sound': True,
+        'sound': False,
     }
     pygame.mixer.pre_init(22050, -16, 2, 1024)
     pygame.init()
@@ -36,8 +36,13 @@ def run():
     # Prepare game
     #~ player_left = KeyboardPlayer(input_state, pygame.K_w, pygame.K_s)
     #~ player_right = MousePlayer(input_state)
-    
-    player_left = QLearningPlayer()
+    savefile=None
+    loadfile=None
+    if(len(sys.argv)>1):
+        savefile=sys.argv[1]
+        if(len(sys.argv)>2):
+            loadfile=sys.argv[2]
+    player_left = QLearningPlayer(savefile, loadfile)
     player_right = BasicAIPlayer()
     game = pypong.Game(player_left, player_right, configuration)
     
@@ -54,8 +59,10 @@ def run():
         input_state['key'] = pygame.key.get_pressed()
         input_state['mouse'] = pygame.mouse.get_pos()
         game.update()
-        if(counter%500000 == 0):
-            #print float(game.score_left.score)/(game.score_right.score+1)
+        if(counter%100000 == 0 or counter%5000000 < 1000):
+            #print float(game.score_left.score)/(game.score_right.score+1), game.player_left.countNonZero/game.player_left.updateCount
+            #print game.player_left.lastAction, game.player_left.lastActionQValues
+            #print game.player_left.lastState
             game.draw(output_surface)
             #~ pygame.surfarray.pixels_alpha(output_surface)[:,::2] = 12
             display_surface.blit(output_surface, (0,0))

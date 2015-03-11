@@ -9,7 +9,7 @@ class QLearningPlayer(object):
         self.discount = 0.9
         self.actions = [-1, 0, 1]
         self.reward = 0
-        self.countZero=0.0
+        self.updateCount=0.0
         self.countNonZero=0.0
         
     def update(self, paddle, game):
@@ -20,8 +20,9 @@ class QLearningPlayer(object):
             self.countNonZero += 1
             if self.countNonZero%100==0:
                 print self.countNonZero/self.countZero
-        else:
-            self.countZero += 1
+        
+        self.updateCount += 1
+        if(
         #paddle.direction = action
         paddle.direction = random.choice([-1, 0, 1])
         lastQValue = self.getQValue(self.lastState, self.lastAction)
