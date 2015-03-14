@@ -1,4 +1,4 @@
-import pygame, pypong, sys
+import pygame, pypong, sys, os.path
 from pypong.player import QLearningPlayer, BasicAIPlayer, KeyboardPlayer, MousePlayer
     
 def run():
@@ -51,7 +51,13 @@ def run():
     
     if savefile==None:
         savefile="no_save"
-    logFileName = stateSpase+"_"+savefile+".log"
+        
+    logFileCount = 0
+    logFileName = stateSpase+"_"+savefile+"_"+('%03d'%logFileCount)+".log"
+    while(os.path.isfile(logFileName)):
+        logFileName = stateSpase+"_"+savefile+"_"+('%03d'%logFileCount)+".log"
+        logFileCount += 1
+    
     # Main game loop
     timestamp = 1
     counter = 0
@@ -65,7 +71,11 @@ def run():
         #input_state['key'] = pygame.key.get_pressed()
         #input_state['mouse'] = pygame.mouse.get_pos()
         game.update()
-        if(counter%50000 == 0 or counter%2000000 < 3000):
+        if(counter%1000000 == 0):
+            f=open(logFileName,'a')
+            f.write(','.join(map(str,(int(game.player_left.updateCount),game.player_left.hits,game.player_left.wins,game.player_left.loses,len(game.player_left.qValues))))+'\n')
+            f.close()
+        if(counter%50000 == 0 or counter%2000000 < 1000):
             print float(game.score_left.score)/(game.score_right.score+1), game.player_left.countNonZero/game.player_left.updateCount
             print game.player_left.lastAction, game.player_left.lastActionQValues
             print game.player_left.lastState
