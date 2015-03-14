@@ -38,14 +38,20 @@ def run():
     #~ player_right = MousePlayer(input_state)
     savefile=None
     loadfile=None
+    stateSpase="PP_BV_BVR"
     if(len(sys.argv)>1):
-        savefile=sys.argv[1]
+        stateSpase=sys.argv[1]
         if(len(sys.argv)>2):
-            loadfile=sys.argv[2]
-    player_left = QLearningPlayer(savefile, loadfile)
+            savefile=sys.argv[2]
+            if(len(sys.argv)>3):
+                loadfile=sys.argv[3]
+    player_left = QLearningPlayer(stateSpase, savefile, loadfile)
     player_right = BasicAIPlayer()
     game = pypong.Game(player_left, player_right, configuration)
     
+    if savefile==None:
+        savefile="no_save"
+    logFileName = stateSpase+"_"+savefile+".log"
     # Main game loop
     timestamp = 1
     counter = 0
@@ -56,13 +62,13 @@ def run():
         if timestamp > 0 and timestamp < now:
             timestamp = now + 5000
             #print clock.get_fps()
-        input_state['key'] = pygame.key.get_pressed()
-        input_state['mouse'] = pygame.mouse.get_pos()
+        #input_state['key'] = pygame.key.get_pressed()
+        #input_state['mouse'] = pygame.mouse.get_pos()
         game.update()
-        if(counter%100000 == 0 or counter%5000000 < 1000):
-            #print float(game.score_left.score)/(game.score_right.score+1), game.player_left.countNonZero/game.player_left.updateCount
-            #print game.player_left.lastAction, game.player_left.lastActionQValues
-            #print game.player_left.lastState
+        if(counter%50000 == 0 or counter%2000000 < 3000):
+            print float(game.score_left.score)/(game.score_right.score+1), game.player_left.countNonZero/game.player_left.updateCount
+            print game.player_left.lastAction, game.player_left.lastActionQValues
+            print game.player_left.lastState
             game.draw(output_surface)
             #~ pygame.surfarray.pixels_alpha(output_surface)[:,::2] = 12
             display_surface.blit(output_surface, (0,0))

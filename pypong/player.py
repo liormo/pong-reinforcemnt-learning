@@ -1,7 +1,10 @@
 import pygame, random, math, datetime, pickle
 
 class QLearningPlayer(object):
-    def __init__(self, savefile, loadfile):
+    def __init__(self, getState, savefile, loadfile):
+        self.wins = 0
+        self.loses = 0
+        self.hits = 0
         self.qValues = {}
         self.lastState = None
         self.lastAction = None
@@ -12,7 +15,7 @@ class QLearningPlayer(object):
         self.updateCount=0.0
         self.countNonZero=0.0
         self.lastActionQValues=[]
-        self.getState = self.getStateBP_PP_VR
+        self.getState = eval("self.getState"+getState)
         self.savefile = savefile
         if loadfile!=None:
             self.loadQTable(loadfile)
@@ -24,7 +27,7 @@ class QLearningPlayer(object):
         actionQValues = [self.getQValue(state, a) for a in self.actions]
         
         action = random.choice([a for a in self.actions if self.getQValue(state, a) == max(actionQValues)])
-        if(random.randrange(210)==1):
+        if(random.randrange(200)==1):
             action = random.choice(self.actions)
             
             
@@ -32,9 +35,9 @@ class QLearningPlayer(object):
             self.countNonZero += 1
         
         self.updateCount += 1
-        if self.savefile!=None and self.updateCount%5000000==0:
+        
+        if self.savefile!=None and self.updateCount%50000000==0:
             self.writeQTableToFile()
-            
             
         paddle.direction = action
         #paddle.direction = random.choice([-1, 0, 1])
@@ -46,14 +49,15 @@ class QLearningPlayer(object):
         self.reward = 0
 
     def hit(self):
+        self.hits+=1
         self.reward = 5
             
     def lost(self):
-        # If we lose, randomise the bias again
-        self.bias = random.random() - 0.5
+        self.loses+=1
         self.reward = -100
         
     def won(self):
+        self.wins+=1
         self.reward = 10
         
     def getQValue(self, state, action):
@@ -64,7 +68,9 @@ class QLearningPlayer(object):
         
     # PP=paddle position
     # BP=ball position
+    # BV=ball velocety
     # VR=variable resolution
+    # BVR=better variable resolution
     def getStateBP_PP(self, paddle, game):
         return (game.ball.rect.x, game.ball.rect.y, paddle.rect.y)
 
@@ -73,19 +79,41 @@ class QLearningPlayer(object):
             state="lost"
         else:
             resolution = math.floor((max(1,game.ball.rect.x-game.paddle_left.rect.right+1)*100)**(1.0/3))-3
-            state = (resolution, math.floor(game.ball.rect.y/(1+((resolution**2)/100))), math.floor(paddle.rect.y/resolution))  
+            state = (resolution, math.floor(game.ball.rect.y/(max(.5,resolution-5)*2)), math.floor(paddle.rect.y/resolution))  
         return state      
-        
+ 
+ 
+    def getStateBP_PP_BV_VR(self, paddle, game):
+        if(game.ball.rect.x<game.paddle_left.rect.right):
+            state="lost"
+        else:
+            resolution = math.floor((max(1,game.ball.rect.x-game.paddle_left.rect.right+1)*100)**(1.0/3))-3
+            state = (resolution, math.floor(game.ball.rect.y/resolution), math.floor(paddle.rect.y/resolution), math.floor(game.ball.velocity_vec[0]), math.floor(game.ball.velocity_vec[1])) 
+             
+        return state  
+
+    def getStateBP_PP_BV_BVR(self, paddle, game):
+        if(game.ball.rect.x<game.paddle_left.rect.right):
+            state="lost"
+        elif(game.ball.velocity_vec[0]>0):
+            state="away"
+        else:
+            xval = min(26,math.floor((max(1,game.ball.rect.x-game.paddle_left.rect.right+1)*70)**(1.0/3))-2)
+            relativeY = game.ball.rect.centery-game.paddle_left.rect.centery
+            yval = math.copysign(1,relativeY)*min(14,math.floor((80*abs(relativeY))**(1.0/3))-2)
+            state = (xval, math.floor(yval/xval), math.floor(paddle.rect.y/xval), math.floor(game.ball.velocity_vec[0]), math.floor(game.ball.velocity_vec[1])) 
+             
+        return state         
         
     def writeQTableToFile(self):
         print "writing"
-        f=open(self.savefile,'w')
+        f=open(self.savefile+".qtable",'w')
         pickle.dump(self.qValues, f)
         f.close()
         print "writen"
         
     def loadQTable(self, fileName):
-        f=open(fileName, 'r')
+        f=open(fileName+".qtable", 'r')
         self.qValues = pickle.load(f)
         f.close()
 
