@@ -1,5 +1,5 @@
 import pygame, pypong, sys, os.path
-from pypong.player import QLearningPlayer, BasicAIPlayer, KeyboardPlayer, MousePlayer
+from pypong.player import AdaptiveQLearningPlayer, QLearningPlayer, BasicAIPlayer, KeyboardPlayer, MousePlayer
     
 def run():
     configuration = {
@@ -38,14 +38,18 @@ def run():
     #~ player_right = MousePlayer(input_state)
     savefile=None
     loadfile=None
-    stateSpase="PP_BV_BVR"
+    isAdaptive = False
     if(len(sys.argv)>1):
         stateSpase=sys.argv[1]
         if(len(sys.argv)>2):
             savefile=sys.argv[2]
             if(len(sys.argv)>3):
                 loadfile=sys.argv[3]
-    player_left = QLearningPlayer(stateSpase, savefile, loadfile)
+        player_left = QLearningPlayer(stateSpase, savefile, loadfile)
+    else:
+        player_left = AdaptiveQLearningPlayer()
+        stateSpase = 'adaptive'
+        isAdaptive = True
     player_right = BasicAIPlayer()
     game = pypong.Game(player_left, player_right, configuration)
     
@@ -73,12 +77,18 @@ def run():
         game.update()
         if(counter%1000000 == 0):
             f=open(logFileName,'a')
-            f.write(','.join(map(str,(int(game.player_left.updateCount),game.player_left.hits,game.player_left.wins,game.player_left.loses,len(game.player_left.qValues))))+'\n')
+            f.write(','.join(map(str,(int(game.player_left.updateCount),game.player_left.hits,game.player_left.wins,game.player_left.loses,game.player_left.splits if isAdaptive else len(game.player_left.qValues))))+'\n')
             f.close()
         if(counter%50000 == 0 or counter%2000000 < 1000):
-            print float(game.score_left.score)/(game.score_right.score+1), game.player_left.countNonZero/game.player_left.updateCount
-            print game.player_left.lastAction, game.player_left.lastActionQValues
-            print game.player_left.lastState
+            print "**********"
+            print "win/lose:",float(game.score_left.score)/(game.score_right.score+1)
+            print "lastAction:", game.player_left.lastAction, "lastActionQValues:", game.player_left.lastActionQValues
+            print "randActionOdds:", game.player_left.randActionOdds
+            if isAdaptive:
+                print "splits:", game.player_left.splits
+                print "lastState:", game.player_left.lastState['p']
+            else:
+                print "lastState:", game.player_left.lastState
             game.draw(output_surface)
             #~ pygame.surfarray.pixels_alpha(output_surface)[:,::2] = 12
             display_surface.blit(output_surface, (0,0))
