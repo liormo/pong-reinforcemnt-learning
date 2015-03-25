@@ -1,0 +1,120 @@
+hr {
+  width: 80%;
+  color: #CFCFCF;
+ 
+}
+body {
+	background: #f2f2f2 url(http://www.cs.huji.ac.il/~ai/projects/2012/css/bg.gif) repeat-y fixed bottom center;
+	color: #333;
+	margin: 0px 13px 13px 13px;
+	text-align: center;
+	font: normal 0.9em sans-serif,Arial;
+}
+
+
+
+.gfx a {
+	background: #F5F5F5 url(http://www.cs.huji.ac.il/~ai/projects/2012/css/AI.jpg) no-repeat; display: block; height: 190px;
+}
+
+li {
+	list-style: url(li.gif);	
+	margin: 2px 3px 2px 0px;
+}
+
+/* main */
+.main {
+	background: #fff; 
+	border: 3px double #EEE; 
+	border-color: #CCC #CFCFCF #CCC #CFCFCF; 
+	margin: 20px auto 4px auto; 
+	text-align: left;
+	width: 620px; 
+}
+
+
+.main h2 {
+	margin-left: 2px; 
+}	
+	
+.container {
+	margin: 10px;
+}
+
+
+
+.title{
+    color: #505050 ;
+    text-align: center;
+	background: #fff;
+}
+
+.title h1 {
+	text-align: center;
+	font: bold 1.5em sans-serif,Arial;
+	color: #666;
+}
+.title h2 {
+	text-align: center;
+	font: bold 1.3em sans-serif,Arial;
+	color: #666;
+}
+.title h3 {
+	text-align: center;
+	font: bold 1.1em sans-serif,Arial;	
+}
+
+.title a {
+	color: #5E5A80 ;
+	text-decoration: none;
+}
+
+/* content */
+.content {
+	background: #fff;
+	clear: both;	
+}
+
+.content h3 {
+	margin: 0px 1px 0px 0px;
+	font: bold 1.1em sans-serif,Arial;
+	color: #666;
+}
+
+.content h5 {
+	margin: 0px 0px 0px 5px;
+	font: bold 0.9em sans-serif,Arial;
+	color: #555;
+}
+
+.content ul {
+	margin: 5px 3px 5px -12px;
+
+}
+
+
+.content p {
+	margin: 5px 13px 5px 13px;
+	
+}
+
+
+.content a {
+	color: 	#2B3856 ;
+	
+}
+
+/* footer */
+.footer {
+   	color: #666;
+	font-size:80%
+}
+.footer .left, .footer .right {padding: 8px 2px; }
+.footer .right, .footer .right a {color: #AAA;}
+.footer .right a:hover {color: #444;}
+
+/* floats */
+.left {float: left;}
+.right {float: right;}
+.clearer {clear: both;}
+

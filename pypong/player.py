@@ -154,8 +154,8 @@ class QLearningPlayer(object):
         self.qValues = {}
         self.lastState = None
         self.lastAction = None
-        self.alpha = 0.2
-        self.discount = 0.995
+        self.alpha = 0.4
+        self.discount = 0.998
         self.actions = [-1, 0, 1]
         self.reward = 0
         self.updateCount=0.0
@@ -220,7 +220,11 @@ class QLearningPlayer(object):
     # VR=variable resolution
     # BVR=better variable resolution
     def getStateBP_PP(self, paddle, game):
-        return (game.ball.rect.x, game.ball.rect.y, paddle.rect.y)
+        if(game.ball.rect.x<paddle.rect.right):
+            return "lost"
+        else:
+            resolution = 5
+            return (math.floor(game.ball.rect.x/resolution), math.floor(game.ball.rect.y/resolution), math.floor(paddle.rect.y/resolution))
 
     def getStateBP_PP_VR(self, paddle, game):
         if(game.ball.rect.x<game.paddle_left.rect.right):
